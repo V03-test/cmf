@@ -31,6 +31,12 @@ class JournalController extends AdminBaseController
         $map = " 1";
         $start_time = input('start_time');
         $end_time = input('end_time');
+        $types     = input('types');
+        if($types&&$types!==0)
+        {
+            $types = intval($types);
+            $map .= " and type = $types";
+        }
         if($key&&$key!=="")
         {
             $key = intval($key);
@@ -48,13 +54,16 @@ class JournalController extends AdminBaseController
         $limits = 20;// 获取总条数
         $count =db('cards_info')->where($map)->count();//计算总页面
         $allpage = intval(ceil($count / $limits));
-
-        $lists =  db('cards_info')->where($map)->page($Nowpage, $limits)->select();
+        $lists =  db('cards_info')->where($map)->page($Nowpage, $limits)->order('add_time desc')->select()->toArray();
         foreach ($lists as $k=>$v) {
             if($v['type']==1) {
                 $lists[$k]['typename'] = "赠送";
-            }else{
+            }else if($v['type']==2){
                 $lists[$k]['typename'] = "补偿";
+            }else if($v['type']==3){
+                $lists[$k]['typename'] = "扣除";
+            }else if($v['type']==4){
+                $lists[$k]['typename'] = "清空";
             }
             $lists[$k]['nickname'] = getuid_byname($v['admin_id']);
         }
@@ -63,6 +72,7 @@ class JournalController extends AdminBaseController
         $this->assign('Nowpage', $Nowpage); //当前页
         $this->assign('allpage', $allpage); //总页数
         $this->assign('val',$key );
+        $this->assign('types',$types);
         if(input('get.page'))
         {
             return json($lists);

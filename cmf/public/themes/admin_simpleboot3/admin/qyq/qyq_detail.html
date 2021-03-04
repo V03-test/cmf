@@ -309,7 +309,7 @@
                     return;
                 }
                 axios
-                    .post('/api.php/demo/qyq/getid_by_detail',{groupId: groupId})
+                    .post('/api/qyq/getid_by_detail',{groupId: groupId})
                     .then(function (response) {
                         console.log(response.data.data);
                         if(response.data.code==1) {
@@ -328,6 +328,20 @@
                                 vm.kf_start   = response.data.data.kf_start;
                                 vm.isCredit   = response.data.data.isCredit;
                         }else{
+                                vm.card = '';
+                                vm.currentCount = '';
+                                vm.maxCount = '';
+                                vm.name      = '';
+                                vm.nickname = '';
+                                vm.groupState = '';
+                                vm.groupName = '';
+                                vm.phoneNum  = '';
+                                vm.userId    = '';
+                                vm.createdTime = '';
+                                vm.day_js      = '';
+                                vm.month_js   = '';
+                                vm.kf_start   = '';
+                                vm.isCredit   = '';
                               layer.msg(response.data.msg);
                         }
                         console.log(response);
@@ -364,7 +378,7 @@
                         btn: ['确定','取消'] //按钮
                     }, function() {
                     axios
-                        .post('/api.php/demo/qyq/stop_qyq', {groupId: groupId,stat:start})
+                        .post('/api/qyq/stop_qyq', {groupId: groupId,stat:start})
                         .then(function (response) {
                             if (response.data.code == 0) {
                                 layer.msg(response.data.message);
@@ -391,7 +405,7 @@
                     btn: ['确定','取消'] //按钮
                 }, function() {
                     axios
-                        .post('/api.php/demo/qyq/stop_dlm', {groupId: groupId,isCredit:start})
+                        .post('/api/qyq/stop_dlm', {groupId: groupId,isCredit:start})
                         .then(function (response) {
                             if (response.data.code == 0) {
                                 layer.msg(response.data.message);
@@ -434,7 +448,7 @@
                     btn: ['确定','取消'] //按钮
                 }, function() {
                     axios
-                        .post('/api.php/demo/qyq/zy_cy', {fromGroupId: fromGroupId,fromUserId: fromUserId,toGroupId: toGroupId,toUserId: toUserId,})
+                        .post('/api/qyq/zy_cy', {fromGroupId: fromGroupId,fromUserId: fromUserId,toGroupId: toGroupId,toUserId: toUserId,})
                         .then(function (response) {
                             if (response.data.code == 0) {
                                 layer.msg(response.data.message);
@@ -464,7 +478,7 @@
                         btn: ['确定','取消'] //按钮
                     }, function() {
                     axios
-                        .post('/api.php/demo/qyq/move_qz', {userId: userId, groupId: groupId})
+                        .post('/api/qyq/move_qz', {userId: userId, groupId: groupId})
                         .then(function (response) {
                             if (response.data.code == 0) {
                                 layer.msg(response.data.message);
@@ -499,7 +513,7 @@
                         btn: ['确定','取消'] //按钮
                     }, function() {
                     axios
-                        .post('/api.php/demo/qyq/up_max_number', {groupId: groupId, maxCount: maxCount})
+                        .post('/api/qyq/up_max_number', {groupId: groupId, maxCount: maxCount})
                         .then(function (response) {
                             if (response.data.code == 0) {
                                 layer.msg(response.data.message);

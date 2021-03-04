@@ -63,7 +63,7 @@
               let vm = this;
               let date = $('#dateSelectorTwo').val();
                 axios
-                    .post('/api.php/demo/statistics/get_t_datad',{date:date})
+                    .post('/api/statistics/get_t_datad',{date:date})
                     .then(function (response) {
                         if(response.data.code==1) {
                             layer.msg('生成成功');
@@ -81,7 +81,7 @@
                vm.is_ok=true;
                 let date = $('#dateSelectorTwo').val();
                 axios
-                    .post('/api.php/demo/statistics/get_qyq_datad',{date:date})
+                    .post('/api/statistics/get_qyq_datad',{date:date})
                     .then(function (response) {
                         if(response.data.code==1) {
                             vm.is_ok = false;

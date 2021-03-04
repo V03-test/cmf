@@ -103,7 +103,7 @@
         <div class="row" style="height: 300px;margin-top: 30px">
         <div class="col-sm-3">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="请输入亲友圈靓号" aria-describedby="basic-addon2">
+                <input type="text" class="form-control"  v-model="groupId" placeholder="请输入亲友圈靓号" aria-describedby="basic-addon2">
                 <span class="input-group-addon" id="basic-addon2">亲友圈靓号</span>
             </div>
         </div>
@@ -142,7 +142,7 @@
                 let vm = this;
                 let uid = vm.uid;
                 axios
-                    .post('/api.php/demo/qyq/get_user',{uid: uid})
+                    .post('/api/qyq/get_user',{uid: uid})
                     .then(function (response) {
                         if(response.data.code==1) {
                             vm.username = response.data.data.name;
@@ -183,12 +183,13 @@
                     // }
                     let gameIds = '';
                     axios
-                        .post("/api.php/demo/qyq/add_qyq",{groupName: groupName,userId:userId,groupId:groupId,gameIds:gameIds})
+                        .post("/api/qyq/add_qyq",{groupName: groupName,userId:userId,groupId:groupId,gameIds:gameIds})
                         .then(function (response) {
                             console.log(response);
                             if(response.data.code==0) {
-                                layer.msg(response.data.message);
-                                layer.closeAll('dialog');
+                                layer.msg(response.data.message,{icon:1,time:2000},function (){
+                                    layer.closeAll('dialog');
+                                });
                             }else{
                                 layer.msg(response.data.message);
                             }
