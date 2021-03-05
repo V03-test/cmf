@@ -138,7 +138,6 @@ class StatisticsController extends RestBaseController
      * 定时移动当天亲友圈统计数据
      */
     public function get_qyq_data() {
-
         $group_list = db('t_group','mysql1')->alias('a')->join('t_group_user b','a.groupId = b.groupId')
             ->where('a.parentGroup=0')
             ->field('a.groupId,b.promoterId1')
@@ -169,6 +168,8 @@ class StatisticsController extends RestBaseController
      * 统计亲友圈新增注册人数
     */
     public function get_qyq_xzdata($groupId) {
+       // $date = date('Y-m-d')." 00:00:00";
+      //$date1 = date('Y-m-d',strtotime(date('Y-m-d H:i:s',strtotime('-1 day'))))." 00:00:00";
         $date = date('Y-m-d')." 00:00:00";
         $date1 = date('Y-m-d',strtotime(date('Y-m-d H:i:s',strtotime('-1 day'))))." 00:00:00";
         $where = " groupId = $groupId AND `createdTime` >= '$date1' AND `createdTime` < '$date'";
