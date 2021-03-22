@@ -18,7 +18,7 @@ class ConfigController extends AdminBaseController
 
     public function ip_config()
     {
-        $file =  file_get_contents('D:\configList.json');
+        $file =  file_get_contents('https://test-xyqp.oss-cn-beijing.aliyuncs.com/test/configList.json');
         $data_info = decrypt_info($file);
        if(is_array($data_info)){
            $httpList = $data_info['httpList']['ips'];
@@ -35,7 +35,7 @@ class ConfigController extends AdminBaseController
 */
     public function saves()
     {
-        $file = file_get_contents('D:\configList.json');
+        $file = file_get_contents('https://test-xyqp.oss-cn-beijing.aliyuncs.com/test/configList.json');
         $data_info = decrypt_info($file);
         if(input('post.')) {
             $parm = input('post.');
@@ -45,7 +45,7 @@ class ConfigController extends AdminBaseController
                 $data_info['hotList']['ips'] = $parm['hotList'];
             }
             $datas = encrypt_info(json_encode($data_info));
-            $res = file_put_contents('D:\configList.json',$datas);
+            $res = file_put_contents('\configList.json',$datas);
             if($res!==false) {
                 return json(["code"=>1,"message"=>"保存成功"]);
             }
@@ -56,7 +56,7 @@ class ConfigController extends AdminBaseController
 */
     public function excels()
     {
-        $filepath =  'D:\configList.json';
+        $filepath =  '\configList.json';
         header('Content-Description: File Transfer');
         header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename='.basename($filepath));
