@@ -2372,6 +2372,21 @@ function decrypt_info($info) {
 }
 
 /**
+ * 加密
+ */
+function encrypt_info($info) {
+        $api_key =db('config')->where('name','api_key')->value('value');
+        $api_vi = db('config')->where('name','api_vi')->value('value');
+        $config = [
+            'key' => $api_key, //加密key
+            'iv' => $api_vi, //保证偏移量为16位
+            'method' => 'AES-128-CBC' //加密方式  # AES-256-CBC等
+        ];
+        $aes = new Crypt($config);
+        $res_info = $aes->aesEn($info);
+    return $res_info;
+}
+/**
  * 获取api 地址
 */
 function get_api_url () {

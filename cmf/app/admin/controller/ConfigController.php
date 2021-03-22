@@ -18,7 +18,7 @@ class ConfigController extends AdminBaseController
 
     public function ip_config()
     {
-       $file =  file_get_contents('https://test-xyqp.oss-cn-beijing.aliyuncs.com/test/configList.json');
+        $file =  file_get_contents('D:\configList.json');
         $data_info = decrypt_info($file);
        if(is_array($data_info)){
            $httpList = $data_info['httpList']['ips'];
@@ -30,10 +30,12 @@ class ConfigController extends AdminBaseController
        }
        return $this->fetch();
     }
-
+/**
+ * 修改IP
+*/
     public function saves()
     {
-        $file = file_get_contents('https://test-xyqp.oss-cn-beijing.aliyuncs.com/test/configList.json');
+        $file = file_get_contents('D:\configList.json');
         $data_info = decrypt_info($file);
         if(input('post.')) {
             $parm = input('post.');
@@ -49,7 +51,9 @@ class ConfigController extends AdminBaseController
             }
         }
     }
-
+/**
+ * 导出json
+*/
     public function excels()
     {
         $filepath =  'D:\configList.json';
@@ -62,5 +66,28 @@ class ConfigController extends AdminBaseController
         header('Pragma: public');
         header('Content-Length: ' . filesize($filepath));
         readfile($filepath);
+    }
+
+    /**
+     * 托管状态
+    */
+    public function auto_play_off(){
+        $info = db('t_resources_configs','mysql1')->where('msgKey','auto_play_off_servers')->value('msgValue');
+        if($info!==false) {
+            return json(['code'=>1,'message'=>'获取成功','auto_play_off'=>$info]);
+        }
+    }
+    /**
+     * 修改托管状态
+     */
+    public function auto_play_save(){
+        if(input('post.')) {
+            $auto_play_off = input('post.auto_play_off');
+            $data['msgValue'] = $auto_play_off;
+            $info = db('t_resources_configs', 'mysql1')->where('msgKey', 'auto_play_off_servers')->update($data);
+            if ($info !== false) {
+                return json(['code' => 1, 'message' => '修改成功']);
+            }
+        }
     }
 }
