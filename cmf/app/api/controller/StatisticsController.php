@@ -48,7 +48,7 @@ class StatisticsController extends RestBaseController
         $parm['xjs'] = $xjs[0]['Xtotal'];
         $parm['card_xh'] = $card_xh;
         $parm['card_sy'] = $card_sy1 + $card_sy2;
-        $parm['tdate']   = date('Y-m-d H:i;s',strtotime('-1 day'));
+        $parm['tdate']   = date('Y-m-d H:i:s',strtotime('-1 day'));
         $res = db('statistics_pt')->insert($parm);
         if($res!==false) {
             apilog('平台数据添加成功',1);
@@ -139,14 +139,16 @@ class StatisticsController extends RestBaseController
      * 定时移动当天亲友圈统计数据
      */
     public function get_qyq_data() {
-
+        $datex = date('Y-m-d',strtotime('-1 day'));
+        $info =db('statistics_qyq')->where('tdate',$datex)->find();
+        if(!empty($info)){
+            return json(['code'=>-1,'message'=>$datex."日期已存在，无需重复生成"]);
+        }
         $group_list = db('t_group','mysql1')->alias('a')->join('t_group_user b','a.groupId = b.groupId')
             ->where('a.parentGroup=0')
             ->field('a.groupId,b.promoterId1')
             ->group('a.groupId')
             ->select();
-
-
 
         if(count($group_list)<1){
             return ['code' => -1, 'msg' => '异常'];
@@ -154,7 +156,7 @@ class StatisticsController extends RestBaseController
         foreach ($group_list as $key=>$v) {
             $data[$key]['groupId'] = $v['groupId'];
             $data[$key]['userId']  = $v['promoterId1'];
-            $data[$key]['tdate']   = date('Y-m-d H:i;s',strtotime('-1 day'));
+            $data[$key]['tdate']   = $datex;
             $data[$key]['xzdata']  = $this->get_qyq_xzdata($v['groupId']);
             $data[$key]['djdata']  = $this->get_qyq_hydata($v['groupId']);
             $data[$key]['zjs']     = $this->get_qyq_zjs($v['groupId']);
@@ -225,7 +227,7 @@ class StatisticsController extends RestBaseController
     public function get_qyq_card_sy($groupId) {
         $where = " userId = $groupId";
         $freeCards = db('user_inf','mysql1')->where($where)->sum('freeCards');
-        $cards = db('user_inf','mysql1')->where($where)->sum('freeCards');
+        $cards = db('user_inf','mysql1')->where($where)->sum('Cards');
         return $freeCards + $cards;
     }
 
@@ -348,25 +350,43 @@ class StatisticsController extends RestBaseController
                 $this->error('请求失败!');
             }
         }
-
     }
-
 
     /**
-     * 获取平台统计数据
+     *@每日数据
      */
-    public function getpt_data_info($dates) {
-            $sydate = $dates;
-            $sytime = time();
-            //$key    = get_api_key();
-            $key = "7HGO4K61M8N2D9LARSPU";
-            $sysign = $this->sysign($sytime,$key);
-            $apiurl = "http://47.96.82.40:8081/pdklogin/qipai?actionType=12&funcType=1&date=".$dates."&sytime=".$sytime."&sysign=".$sysign;
-            $info = cmf_curl_get($apiurl);
-            return $info;
+    public function daily_stat() {
+        $s_time = date('Y-m-d',strtotime(date('Y-m-d H:i:s',strtotime('-1 day'))))." 00:00:00";
+        $e_time    = date('Y-m-d',strtotime(date('Y-m-d H:i:s',strtotime('-1 day'))))." 23:59:59";
+        if(input('post.'))
+        {
+            $parm = input('post.');
+            $start_time = $parm['start_time'];
+            $end_time   = $parm['end_time'];
+            if(!empty($start_time) && !empty($end_time)){
+
+            }else{
+                $start_time = date('Y-m-d',strtotime(date('Y-m-d H:i:s',strtotime('-7 day'))))." 00:00:00";
+                $end_time   = date('Y-m-d H:i:s');
+            }
+            $where = " 1 and tdate >= '$start_time' and tdate<='$end_time'";
+            $cont_list = db('statistics_pt')->where($where)->select();
+            return json(['data'=>$cont_list,'code'=>1]);
+        }
     }
 
-    public function sysign ($sytime,$key) {
-        return md5($sytime.$key);
+    public function get_tdata() {
+        $date = date('Y-m-d');
+        $end_date = date('Y-m-d',strtotime('-7 day'));
+        $wheres = " 1 and tdate>='$end_date'";
+        $tdate = db('statistics_pt')->where($wheres)->column('tdate');
+        $zcdata = db('statistics_pt')->where($wheres)->column('xzdata');
+        $hydata = db('statistics_pt')->where($wheres)->column('hydata');
+        $djdata = db('statistics_pt')->where($wheres)->column('djdata');
+        $zjs = db('statistics_pt')->where($wheres)->column('zjs');
+        $xjs = db('statistics_pt')->where($wheres)->column('xjs');
+        $card_xh = db('statistics_pt')->where($wheres)->column('card_xh');
+        $card_sy = db('statistics_pt')->where($wheres)->column('card_sy');
+        return json(["code"=>1,"tdate"=>$tdate,"xzdata"=>$zcdata,"hydata"=>$hydata,"djdata"=>$djdata,"zjs"=>$zjs,"xjs"=>$xjs,"card_xh"=>$card_xh,"card_sy"=>$card_sy]);
     }
 }
