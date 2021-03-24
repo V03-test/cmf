@@ -112,4 +112,35 @@ class QyqController extends AdminBaseController
         $this->assign('end_time', $end_time);
         return $this->fetch();
     }
+    /**
+     * 修改玩家密码
+    */
+    public function reset_pwd() {
+//        $key = input('key');
+//        if($key&&$key!=="")
+//        {
+//            $userId = $key;
+//        }
+//        $userInfo = db('user_inf','mysql1')->where('userId',$userId)->find();
+//        $this->assign('userInfo', $userInfo);
+//        $this->assign('val', $key);
+        return $this->fetch();
+    }
+
+    public function save_password () {
+        $password = input('password');
+        $userId   = input('userId');
+        $userInfo = db('user_inf','mysql1')->where('userId',$userId)->find();
+        if(empty($userInfo)) {
+            return json(['code'=>-1,'msg'=>'用户不存在']);
+        }
+        if(!empty($password)){
+            $newpassword = md5($password.'sanguo_shangyou_2013');
+            $data['pw'] = $newpassword;
+            $res = db('user_inf','mysql1')->where('userId',$userId)->update($data);
+            if($res!==false){
+                return json(['code'=>1,'msg'=>'修改成功']);
+            }
+        }
+    }
 }
