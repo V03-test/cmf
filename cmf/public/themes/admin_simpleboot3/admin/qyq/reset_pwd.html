@@ -56,6 +56,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="layui-col-md2">
+                            <div class="layui-card">
+                                <div class="layui-card-header">玩家游戏状态</div>
+                                <div class="layui-card-body">
+                                    <span class="layui-badge" v-show="userState!==0">正常登录</span>
+                                    <span class="layui-bg-blue" v-show="userState===0">禁止登录</span>
+                                    <button class="btn btn-info" v-show="userState===0" style="margin-right: 20px;width: 77px" @click="reset_state(1)">允许登录</button>
+                                    <button class="btn btn-danger"  v-show="userState!==0" style="margin-right: 20px;width: 77px"  @click="reset_state(0)">禁止登录</button>
+                                </div>
+                            </div>
+                        </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">需要修改成的密码</div>
@@ -92,6 +103,7 @@
             groupId: '',
             account: "- -",
             username: "- -",
+            userState: "- -",
             password: '',
             uid: '',
         },
@@ -107,6 +119,7 @@
                     .then(function (response) {
                         if(response.data.code==1) {
                             vm.username = response.data.data.name;
+                            vm.userState = response.data.data.userState;
                         }else{
                             alert(response.data.msg);
                         }
@@ -134,7 +147,6 @@
                     axios
                         .post("/admin/qyq/save_password",{userId:userId,password:password})
                         .then(function (response) {
-                            console.log(response);
                             if(response.data.code==1) {
                                 layer.msg(response.data.message,{icon:1,time:2000},function (){
                                     layer.msg("修改成功");
@@ -149,8 +161,41 @@
                             console.log(error);
                         });
                 })
+            },
+            reset_state(i) {
+                let vm = this;
+                let userId = vm.userId;
+                let msg;
+                if(i===0){
+                    msg = "您确定要禁止会员登录吗？";
+                }else{
+                    msg = "您确定要开启会员登录吗？";
+                }
+                layer.confirm(msg, {
+                    btn: ['确定','取消'] //按钮
+                }, function() {
+                    if(!userId) {
+                        layer.msg('用户信息不存在');
+                        return;
+                    }
+                    axios
+                        .post("/admin/qyq/reset_state",{userId:userId,userState:i})
+                        .then(function (response) {
+                            if(response.data.code==1) {
+                                layer.msg(response.data.message,{icon:1,time:2000},function (){
+                                    layer.msg("修改成功");
+                                    vm.seach();
+                                    layer.closeAll('dialog');
+                                });
+                            }else{
+                                layer.msg(response.data.message);
+                            }
 
-
+                        })
+                        .catch(function (error) { // 请求失败处理
+                            console.log(error);
+                        });
+                })
             },
         },
         mounted:function(){
