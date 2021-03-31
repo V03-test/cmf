@@ -192,6 +192,40 @@ class StatisticsController extends AdminBaseController
         return $this->fetch();
     }
 
-
+    /**
+     * 玩法详情数据统计
+     */
+    public function w_details() {
+        $s_time = date('Y-m-d',strtotime(date('Y-m-d H:i:s',strtotime('-1 day'))))." 00:00:00";
+        $e_time    = date('Y-m-d',strtotime(date('Y-m-d H:i:s',strtotime('-1 day'))))." 23:59:59";
+        if(input('post.'))
+        {
+            $parm = input('post.');
+            $start_time = $parm['start_time'];
+            $end_time   = $parm['end_time'];
+            $uid        = $parm['uid'];
+            if(empty($uid)){
+                return json(['data'=>[],'code'=>0,'msg'=>"请输入亲友圈id"]);
+            }
+            if(empty($start_time) || empty($end_time)){
+                $start_times = date('Ymd',strtotime(date('Y-m-d H:i:s',strtotime('-1 day'))))." 00:00:00";
+                $end_times    = date('Ymd',strtotime(date('Y-m-d H:i:s',strtotime('-1 day'))))." 23:59:59";
+            }
+            if (!empty($start_time) && !empty($end_time)){
+                $start_times = date('Ymd',strtotime($start_time));
+                $end_times    = date('Ymd',strtotime($end_time));
+            };
+            $where = " 1 and dataDate >= '$start_times' and dataDate<='$end_times' and groupId = '$uid' and userId=0";
+            $cont_list = db('log_group_table','mysql1')->where($where)->field('gameType,groupId,countTotal,diamondsCount,bureau')->order('dataDate desc')->select();
+            if(!empty($cont_list)){
+                return json(['data'=>$cont_list,'code'=>1]);
+            }else{
+                return json(['data'=>[],'code'=>0,'msg'=>"暂无数据"]);
+            }
+        }
+        $this->assign('start_time', $s_time); //当前页
+        $this->assign('end_time', $e_time); //总页数
+        return $this->fetch();
+    }
 
 }
