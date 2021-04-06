@@ -216,8 +216,11 @@ class StatisticsController extends AdminBaseController
                 $end_times    = date('Ymd',strtotime($end_time));
             };
             $where = " 1 and dataDate >= '$start_times' and dataDate<='$end_times' and groupId = '$uid' and userId=0";
-            $cont_list = db('log_group_table','mysql1')->where($where)->field('gameType,groupId,countTotal,diamondsCount,bureau')->order('dataDate desc')->select();
+            $cont_list = db('log_group_table','mysql1')->where($where)->field('gameType,groupId,countTotal,diamondsCount,bureau')->order('dataDate desc')->select()->toArray();
             if(!empty($cont_list)){
+                foreach ($cont_list as $k=>$v){
+                        $cont_list[$k]['gameName'] = $this->get_gameName($cont_list[$k]['gameType']);
+             }
                 return json(['data'=>$cont_list,'code'=>1]);
             }else{
                 return json(['data'=>[],'code'=>0,'msg'=>"暂无数据"]);
@@ -227,5 +230,10 @@ class StatisticsController extends AdminBaseController
         $this->assign('end_time', $e_time); //总页数
         return $this->fetch();
     }
+
+    private function get_gameName($gid) {
+        return db('jar_info')->where('playType',$gid)->value('name');
+    }
+
 
 }
