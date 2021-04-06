@@ -46,6 +46,7 @@
                         <thead>
                         <tr class="long-tr">
                             <th width="6%">亲友圈ID</th>
+                            <th width="6%">玩法</th>
                             <th width="6%">玩法ID</th>
                             <th width="6%">玩法开设的局数</th>
                             <th width="5%">玩法消耗的钻石数</th>
@@ -55,6 +56,7 @@
                         <tbody id="list-content">
                             <tr v-for="item in data_list">
                                 <td>{{uid}}</td>
+                                <td style="color: green">{{item.gameName}}</td>
                                 <td style="color: green">{{item.gameType}}</td>
                                 <td style="color: darkgreen">{{item.bureau}}</td>
                                 <td style="color: green">{{item.diamondsCount}}</td>
