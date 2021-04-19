@@ -237,4 +237,32 @@ class QyqController extends RestBaseController
             }
         }
     }
+
+    /**
+     * 添加账号
+     */
+    public function add_member() {
+        if(input('post.')){
+            $mid = cmf_get_current_admin_id();
+            $parm = input('post.');
+            $userinfo = db('user_inf','mysql1')->where('flatId',$parm['u'])->find();
+            if(!empty($userinfo)){
+                $r_data['msg'] = "用户名已存在了,请重新输入！";
+                $r_data['code'] = -1;
+                return json($r_data);
+            }
+            $parm['time'] = time();
+            $parm['optType'] = 1;
+            $apiurl = $apiurl = get_api_url()."selfRegister.do";
+            $parm['sign'] = checkSign($parm);
+            $info = cmf_api_request($apiurl,$parm);
+            $res_info = decrypt_info($info);
+            if($res_info['code']===0){
+                apilog($mid."后台注册会员成功");
+                return json($res_info);
+            }else{
+                return json($res_info);
+            }
+        }
+    }
 }

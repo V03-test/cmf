@@ -56,6 +56,7 @@ class JournalController extends RestBaseController
                 apilog($mid."添加用户钻石成功".$res_infos);
                 if(!empty($res) && !empty($res2)){
 //                    Db::commit();
+                    $res_info['message']="成功";
                     return json($res_info);
                 }else{
 //                    Db::rollback();

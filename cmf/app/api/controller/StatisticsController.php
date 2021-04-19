@@ -389,4 +389,5 @@ class StatisticsController extends RestBaseController
         $card_sy = db('statistics_pt')->where($wheres)->column('card_sy');
         return json(["code"=>1,"tdate"=>$tdate,"xzdata"=>$zcdata,"hydata"=>$hydata,"djdata"=>$djdata,"zjs"=>$zjs,"xjs"=>$xjs,"card_xh"=>$card_xh,"card_sy"=>$card_sy]);
     }
+
 }

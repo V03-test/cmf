@@ -152,4 +152,9 @@ class QyqController extends AdminBaseController
         }
     }
 
+
+    public function add_user() {
+        return $this->fetch();
+    }
+
 }
