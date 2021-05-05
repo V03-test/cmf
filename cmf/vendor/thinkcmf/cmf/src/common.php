@@ -2339,8 +2339,14 @@ function str_to_arr($string)
 
 function checkSign($params_info) {
     ksort($params_info);
-    $params_infoss = http_build_query($params_info);
-    return md5("&".$params_infoss."&key=xw2qRjtbesoMPcd8");
+    $str = "";
+    foreach ($params_info as $k => $v) {
+        $str .= $k . "=" .$v . "&amp;";
+    }
+    $str = htmlspecialchars_decode($str);
+    $str = "&".$str."key=xw2qRjtbesoMPcd8";
+    $strs = md5($str);
+    return $strs;
 }
 
 /**
@@ -2350,7 +2356,7 @@ function getuid_byname($uid) {
     return $nickname ? $nickname : "暂无";
 }
 /**
- * 解密
+ * 解密 R3eczBvY1KETw06o
  */
 function decrypt_info($info) {
     $is_decrypt = db('config')->where('name','is_decrypt')->value('value');
