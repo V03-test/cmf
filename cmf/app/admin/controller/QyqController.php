@@ -157,4 +157,8 @@ class QyqController extends AdminBaseController
         return $this->fetch();
     }
 
+    public function ip_config()
+    {
+        return $this->fetch();
+    }
 }
