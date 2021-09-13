@@ -11,7 +11,7 @@ namespace app\api\controller;
 
 use cmf\controller\RestBaseController;
 use app\api\command\Crypt;
-use think\Db;
+use think\facade\Db;
 /**
  * Class IndexController
  * @package apis\api\controller
@@ -265,4 +265,75 @@ class QyqController extends RestBaseController
             }
         }
     }
+
+    /**
+     * 获取亲友圈成员数据
+    */
+    public function getgid_by_userList() {
+        $groupId = input('post.groupId');
+        $dates =  input('post.dates');
+        $dates = date('Ymd',strtotime($dates));
+        if(!empty($groupId)){
+            $userList = db('t_group_debug','mysql1')->where('groupId',$groupId)->value("whiteNameList");
+            $sql = "SELECT lg.groupId,lg.userId,ui.`name`,lg.selfWinCredit,lg.selfZjsCount,lg.selfDyjCount FROM log_group_commission lg,user_inf ui WHERE lg.groupId='$groupId' AND lg.dataDate='$dates' AND FIND_IN_SET(lg.userId,'$userList') AND lg.userId=ui.userId ORDER BY lg.selfWinCredit DESC";
+            if(empty($userList)){
+                return json(['code'=>-1,'message'=>"暂无数据"]);
+            }
+            $list = Db::connect('mysql1')->query($sql);
+
+            return json(['code'=>1,'userList'=>$list]);
+        }
+
+    }
+
+    /**
+     * 获取亲友圈成员数据
+     */
+    public function get_guid_by_List() {
+        $groupId = input('post.groupId');
+        $userId  = input('post.userId');
+        $date    = input('post.dates');
+        $begtime = $date. " 00:00:00";
+        $endtime = $date. " 23:59:59";
+        $where = " 1 and groupId = $groupId and userId = $userId and createdTime>= '$begtime'  AND createdTime<= '$endtime' and winLoseCredit>=0";
+        $where1 = " 1 and groupId = $groupId and userId = $userId and createdTime>= '$begtime'  AND createdTime<= '$endtime' and winLoseCredit<0";
+        $cont_info = db('t_table_user','mysql1')->where($where)->field('count(tableNo) as c ,sum(winLoseCredit) as b')->select();
+        $cont_info1 = db('t_table_user','mysql1')->where($where1)->field('count(tableNo) as c ,sum(winLoseCredit) as b')->select();
+
+       $sql = "SELECT ss.playType,ss.logId,ss.tableId,tu.userId,gu.`name`,tu2.winLoseCredit FROM t_table_user tu,(
+        SELECT tt.tableNo,tt.tableId,gt.playType,tt.logId FROM t_table_record tt,t_group_table gt WHERE tt.tableNo in( SELECT tableNo FROM t_table_user WHERE groupId='$groupId' AND userId=$userId AND createdTime>='$begtime'  AND createdTime<='$endtime' AND winLoseCredit>=0) AND tt.tableNo=gt.keyId
+        ) ss, t_table_user tu2,user_inf gu WHERE tu.tableNo=ss.tableNo AND tu2.tableNo=ss.tableNo AND gu.userId=tu.userId  AND tu.userId!='$userId' AND tu2.userId='$userId'";
+
+        $sql1 = "SELECT ss.playType,ss.logId,ss.tableId,tu.userId,gu.`name`,tu2.winLoseCredit FROM t_table_user tu,(
+SELECT tt.tableNo,tt.tableId,gt.playType,tt.logId FROM t_table_record tt,t_group_table gt WHERE tt.tableNo in( SELECT tableNo FROM t_table_user WHERE groupId='$groupId' AND userId=$userId AND createdTime>='$begtime'  AND createdTime<='$endtime' AND winLoseCredit<0) AND tt.tableNo=gt.keyId
+) ss, t_table_user tu2,user_inf gu WHERE tu.tableNo=ss.tableNo AND tu2.tableNo=ss.tableNo AND gu.userId=tu.userId  AND tu.userId!='$userId' AND tu2.userId='$userId';
+";
+        $list = Db::connect('mysql1')->query($sql);
+        $list1 = Db::connect('mysql1')->query($sql1);
+        if(empty($cont_info)) {
+            $cont_win = 0;
+            $cont_winjs = 0;
+        }else{
+            $cont_win = $cont_info[0]['b'];
+            $cont_winjs = $cont_info[0]['c'];
+        }
+        if(empty($cont_info1)){
+            $cont_lose = 0;
+            $cont_losejs = 0;
+        }else{
+            $cont_lose = $cont_info1[0]['b'];
+            $cont_losejs = $cont_info1[0]['c'];
+        }
+
+        $cont_zjs = intval($cont_winjs) + intval($cont_losejs);
+        $cont_list = [
+            "lose_credit" => $cont_lose,
+            "win_credit"  => $cont_win,
+            "cont_zjs"    => $cont_zjs,
+            "lose_js"     =>$cont_losejs,
+            "win_js"      => $cont_winjs
+        ];
+        return json(['code'=>1,'cont_list'=>$cont_list,'list'=>$list,'list1'=>$list1]);
+    }
+
 }
