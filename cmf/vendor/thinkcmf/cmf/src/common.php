@@ -18,8 +18,8 @@ use think\Loader;
 use cmf\lib\Storage;
 use think\facade\Hook;
 use app\api\command\Crypt;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use phpOffice\phpspreadsheet\Spreadsheet;
+use phpOffice\phpspreadsheet\Writer\Xlsx;
 // 应用公共文件
 
 /**
