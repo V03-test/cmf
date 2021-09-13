@@ -26,7 +26,7 @@ return [
             // 服务器地址
             'hostname'          => env('database.hostname', '127.0.0.1'),
             // 数据库名
-            'database'          => env('database.database', 'thinkcmf'),
+            'database'          => env('database.database', 'cms03'),
             // 用户名
             'username'          => env('database.username', 'root'),
             // 密码
@@ -64,11 +64,11 @@ return [
             // 数据库类型
             'type'              => env('database.type', 'mysql'),
             // 服务器地址
-            'hostname'          => env('database.hostname', '192.168.1.112'),
+            'hostname'          => env('database.hostname', '8.131.239.9'),
             // 数据库名
-            'database'          => env('database.database', 'jnqp_login'),
+            'database'          => env('database.database', 'v003_login'),
             // 用户名
-            'username'          => env('database.username', 'xiaojie'),
+            'username'          => env('database.username', 'xj'),
             // 密码
             'password'          => env('database.password', 'xiaojie'),
             // 端口
