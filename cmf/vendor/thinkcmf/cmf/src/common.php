@@ -2505,7 +2505,6 @@ function opSheet($spreadsheet,$n, $data)
     $spreadsheet->getActiveSheet($n)->getStyle('M')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); //居中
     $spreadsheet->getActiveSheet($n)->getStyle("$infoStart")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); //居中
     $spreadsheet->getActiveSheet($n)->getStyle("$infoStart")->getFont()->setBold(true); //标题栏加粗
-    $spreadsheet->getActiveSheet($n)->setAutoFit('true');
     $objActSheet->setCellValue('A1', $title."；昵称：".$data['username']); //设置每个sheet中的名称title
 
 
