@@ -293,11 +293,12 @@ SELECT tt.tableNo,tt.tableId,gt.playType,tt.logId FROM t_table_record tt,t_group
 
         $cont_zjs = intval($cont_winjs) + intval($cont_losejs);
         $cont_list = [
-            "总输分数"  => $cont_lose,
-            "总赢分数"  => $cont_win,
+            "输局数"   =>$cont_losejs,
+            "输分数"  => $cont_lose,
+            "赢局数"   => $cont_winjs,
+            "赢分数"  => $cont_win,
             "总局数"    => $cont_zjs,
-            "总输局数"   =>$cont_losejs,
-            "总赢局数"   => $cont_winjs
+            "总输赢分"    => intval($cont_lose) + intval($cont_win)
         ];
         return ['username'=>$username,'userId'=>$userId,'cont_list'=>$cont_list,'list'=>$list,'list1'=>$list1];
     }
